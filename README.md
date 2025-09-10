@@ -2,11 +2,9 @@ This repo was created for debugging an issue with useChat onData when using a sh
 
 ### Issue
 
-The onData of a useChat hook is never triggered. The onData of the Chat class is triggered. The implication is that [ephemeral data parts](https://ai-sdk.dev/docs/ai-sdk-ui/streaming-data#transient-data-parts-ephemeral) cannot be consumed where the useChat hook is used.
+The onData of a useChat hook within the chat-input does not trigger as expected. The onData of the Chat class in the shared context is triggered. The implication is that [ephemeral data parts](https://ai-sdk.dev/docs/ai-sdk-ui/streaming-data#transient-data-parts-ephemeral) cannot be consumed via onData where the useChat hook is used.
 
-In this repo this is represented by console logs in the chat context (using chat class) and chat input (useChat).
-
-Expectation: That useChat's onData would be triggered when there is a data message. That both console messages (chat context + chat input) would be logged.
+We have two console logs, but only see the one arising from the chat-context.tsx. Removing the onData from chat-context does not resolve the issue. 
 
 ### Replication
 
@@ -20,3 +18,6 @@ It uses the following resources:
 
 - [Template repo for shared context components](https://github.com/vercel/ai/tree/main/examples/next-openai/app/use-chat-shared-context)
 - [Template repo for data parts (for route)](https://github.com/vercel/ai/blob/main/examples/next-openai/app/api/use-chat-data-ui-parts/route.ts)
+
+### Example
+<img width="1496" height="807" alt="image" src="https://github.com/user-attachments/assets/2cbcbb24-0d4f-4f1d-8fcf-59ef43327fae" />
