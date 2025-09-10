@@ -1,0 +1,52 @@
+// https://github.com/vercel/ai/tree/main/examples/next-openai/app/use-chat-shared-context
+'use client';
+
+import React, { createContext, useContext, ReactNode, useState } from 'react';
+import { Chat } from '@ai-sdk/react';
+import { DefaultChatTransport, UIMessage } from 'ai';
+
+interface ChatContextValue {
+  // replace with your custom message type
+  chat: Chat<UIMessage>;
+  clearChat: () => void;
+}
+
+const ChatContext = createContext<ChatContextValue | undefined>(undefined);
+
+function createChat() {
+  return new Chat<UIMessage>({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+    onData: (event) => {
+      console.log('onData within chat-context.tsx: ', JSON.stringify(event, null, 2));
+    },
+  });
+}
+
+export function ChatProvider({ children }: { children: ReactNode }) {
+  const [chat, setChat] = useState(() => createChat());
+
+  const clearChat = () => {
+    setChat(createChat());
+  };
+
+  return (
+    <ChatContext.Provider
+      value={{
+        chat,
+        clearChat,
+      }}
+    >
+      {children}
+    </ChatContext.Provider>
+  );
+}
+
+export function useSharedChatContext() {
+  const context = useContext(ChatContext);
+  if (!context) {
+    throw new Error('useSharedChatContext must be used within a ChatProvider');
+  }
+  return context;
+}
